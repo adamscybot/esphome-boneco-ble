@@ -12,11 +12,13 @@ But now...I invite you to go to the next level with this gratuitous ESPHome inte
 ## ESPHome Component vs HA Integration
 
 > [!NOTE]  
-> I wrote most of the code a long time back and put it on the backburner half done. I am now revisiting. Since then I found https://github.com/DeKaN/ha-boneco exists and device support, and binding without sniffing the key, has been figured out. I will begin to bring this project up to speed.
+> I wrote most of the code a long time back and put it on the backburner half done. I am now revisiting. Since then https://github.com/DeKaN/ha-boneco came into exitence and has gone on to solve device support,  binding without sniffing the key, etc. I will begin to bring this project up to speed.
 
 This project is a native ESPHome component and so does not utilise "BLE proxies". This approach is a different niche that may or may not be good for you:
 
-* This solution does not add to contention problems with other Home Assistant integrations, and is not effected by them in the other direction. The scalability model is different (predicatable and controlled, but more rigid and configured by yourself).
+* BLE connections terminate at the ESP32, which handles everything on device. The ESP32 is an "edge" device.
+  * Does not add to contention problems with other Home Assistant integrations, and is not effected by them in the other direction. If you have this problem (a number of BLE devices), you will know.
+  * The scalability model is different (predicatable and controlled, but more rigid and configured by yourself).
   * This means state updates are almost instant and stability is consistent. 
   * See [Multiple devices](#multiple-devices) for more details.
 * Support for niche use cases, e.g:
@@ -29,9 +31,6 @@ This project is a native ESPHome component and so does not utilise "BLE proxies"
 ## Features
 
 ### Device support
-
-> [!WARNING]  
-> There is a possibility to expand device support, including to other Boneco BLE devices. See the [FAQ](#what-about-other-boneco-devices).
 
 The project currently only supports fans in the Boneco BLE range.
 
@@ -50,6 +49,9 @@ Capabilities:
 
 
 ## Prequisites
+
+> [!NOTE]  
+> I wrote most of the code a long time back and put it on the backburner half done. I am now revisiting. Since then https://github.com/DeKaN/ha-boneco came into exitence and has gone on to solve device support,  binding without sniffing the key, etc. I will begin to bring this project up to speed.
 
 The following are required:
 
@@ -73,7 +75,15 @@ This process is somewhat involved at the moment so head over to [Capturing devic
 
 ### Quick Start
 
-First import this component to your base ESPHome YAML via this GitHub repository:
+Use the `esp-idf` platform for maximum performance.
+```
+esp32:
+  variant: ESP32 # change to your variant
+  framework:
+    type: esp-idf
+```
+
+Now import this component to your base ESPHome YAML via this GitHub repository:
 
 ```yaml
 external_components:
@@ -130,7 +140,7 @@ sensor:
 
 ### Multiple Devices
 
-As per the [BLE Client](https://esphome.io/components/ble_client/) docs a maximum of three active connections is the default, but you can configure this to a higher number. The ESPHome docs recommend not exceeding five. To raise this limit as follows:
+As per the [BLE Client](https://esphome.io/components/ble_client/) docs a maximum of three active connections is the default, but you can configure this to a higher number. The ESPHome docs recommend not exceeding five. To raise this limit configure `esp32_ble`:
 
 ```
 esp32_ble:
@@ -141,10 +151,10 @@ Note this project is a native on-device ESP32 solution that does not require con
 
 * You define yourself which ESP32 holds connections with which devices.
 * You are not fighting for contention with any other integrations. 
-* For this reason there is no time slicing so BLE connections should be rock solid and not suddenly degrading because of other/new integrations. Behaviour is predictable and contention is isolated to only that which you could create inside the single ESP32 you are configuring.
+* For this reason BLE connections are generally solid and not suddenly degrading because of other/new integrations. Behaviour is predictable and contention is isolated to only that which you could create inside the single ESP32 you are configuring.
 * The defined connections are always-connected and state updates are instant.
 * You place the device in an area convenient for the BLE devices you configured for it in the YAML. 
-* If you need to scale horizontally (probbaly unlikely someone has >5 Boneco devices), you
+* If you still need to scale horizontally (probbaly unlikely someone has >5 Boneco devices), you configure another batch of devices on another ESP32 using this component and everything is happy.
 
 ### Fan Configuration API
 
