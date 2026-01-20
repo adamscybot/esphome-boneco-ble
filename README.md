@@ -9,14 +9,33 @@ In my opinion, these are amongst the highest quality, nicely designed & aestheti
 
 But now...I invite you to go to the next level with this gratuitous ESPHome integration! Want to be bathed in a cooling breeze when the temperature crosses your threshold? Left the house and forgot to turn your fan off? Or will you simply never rest until you can enjoy the strange nerdy-satisfaction of Home Assistant totality? Well, now you can!
 
+## ESPHome Component vs HA Integration
+
+> [!NOTE]  
+> I wrote most of the code a long time back and put it on the backburner half done. I am now revisiting. Since then I found https://github.com/DeKaN/ha-boneco exists and device support, and binding without sniffing the key, has been figured out. I will begin to bring this project up to speed.
+
+This project is a native ESPHome component and so does not utilise "BLE proxies". This approach is a different niche that may or may not be good for you:
+
+* This solution does not add to contention problems with other Home Assistant integrations, and is not effected by them in the other direction. The scalability model is different (predicatable and controlled, but more rigid and configured by yourself).
+  * This means state updates are almost instant and stability is consistent. 
+  * See [Multiple devices](#multiple-devices) for more details.
+* Support for niche use cases, e.g:
+  * Direct interaction with other hardware components.
+  * High level of advanced configuration/integration opportunities via ESPHome YAML.
+  * Novel solutions such as using Zigbee instead of WiFI as backhaul.
+  * Don't need Home Assistant _at all_ if you don't want. Works when its down.
+
+
 ## Features
+
+### Device support
 
 > [!WARNING]  
 > There is a possibility to expand device support, including to other Boneco BLE devices. See the [FAQ](#what-about-other-boneco-devices).
 
 The project currently only supports fans in the Boneco BLE range.
 
-### Fans
+#### Fans
 
 Models supported:
 
@@ -151,29 +170,7 @@ It may be theoretically possible to retain app control with some sort of Bluetoo
 
 If you wish to use the app, switch off your ESPHome device.
 
-### What about other Boneco devices?
 
-This project is currently only tested with the F235 fan. It is likely that the F225 fan is also compatible given the similiarity.
-
-For other non-fan Boneco devices that use BLE, there is a reasonable possibility that the device key capture and related authentication approach is applicable. This is speculation. If this is the case, this project could feasibly add support and the first major barrier would already be completed. Regardless, additional work would be needed in order to understand the format of the state payload for the device in question.
-
-I would be happy to work with someone who owns these devices, but this would involve some technical ability and methodical analysis. Alternatively, if you are able to provide me with the device I would be happy to attempt all that is required and reimburse you in full if I fail 😅.
-
-WiFi devices are completely out of scope of this project as the mechanism used their won't bare any similiarites with that of the BLE devices.
-
-### Can I connect directly from a Rasberry Pi instead of using an ESP32?
-
-This project is a native integration for ESPHome. This allows for some advanced customisation, caters for some niche cases (hardware extensibility, decentralisation, gateways to other protocols like zigbee etc). But it does also come at the cost of needing an ESP32 device.
-
-It would be relatively trivial for me to provide an alternative native Home Assistant integration that uses the on-board Bluetooth of the RPi. Users could optionally use [ESPHome Bluetooth Proxies](https://esphome.io/components/bluetooth_proxy/) to extend range if they pleased.
-
-You might argue that I should have started with the native Home Assistant integration first...but...I didnt 🙈; and I wanted to get this out of the door first.
-
-If you really want it, please raise an issue on this repository and I'll see what I can do. I would likely maintain parallel implementations to suite the differnet integration scenarios (Native ESPHome vs Native Home Assistant).
-
-### Do I really need a BLE sniffer?
-
-With this project, yes. See [Capturing Device Details](./docs/capturing-device-details/README.md) for context.
 
 ## Disclaimer
 
